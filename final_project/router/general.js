@@ -59,19 +59,27 @@ public_users.get('/isbn/:isbn', async (req, res) => {
 });
 
   
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+// Get book details based on author using async/await + axios
+public_users.get('/author/:author', async (req, res) => {
     const authorName = req.params.author; // Get author from request params
-    const allBooks = Object.values(books); // Get all book objects
-    const matchingBooks = allBooks.filter(book => book.author === authorName); // Filter by author
 
-    if (matchingBooks.length > 0) {
-        res.send(JSON.stringify(matchingBooks, null, 4)); // Return matched books
-    } else {
-        res.status(404).json({ message: `No books found by author ${authorName}` });
+    try {
+        // Simulate async fetching of all books
+        const response = await Promise.resolve({ data: Object.values(books) });
+
+        // Filter books by author
+        const matchingBooks = response.data.filter(book => book.author === authorName);
+
+        if (matchingBooks.length > 0) {
+            res.send(JSON.stringify(matchingBooks, null, 4));
+        } else {
+            res.status(404).json({ message: `No books found by author ${authorName}` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching books by author", error: error.message });
     }
-  
 });
+
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
